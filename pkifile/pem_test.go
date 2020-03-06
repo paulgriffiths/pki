@@ -239,3 +239,111 @@ func TestPublicKeyFromPEMFile(t *testing.T) {
 		})
 	}
 }
+
+func TestCertFromPEMFile(t *testing.T) {
+	t.Parallel()
+
+	var testcases = []struct {
+		filename string
+		err      error
+	}{
+		{
+			filename: "testdata/example_root_ca.pem",
+		},
+		{
+			filename: "testdata/no_such.file",
+			err:      errors.New("no such file"),
+		},
+		{
+			filename: "testdata/example_csr.pem",
+			err:      errors.New("not a certificate"),
+		},
+	}
+
+	for _, tc := range testcases {
+		var tc = tc
+
+		t.Run(tc.filename, func(t *testing.T) {
+			t.Parallel()
+
+			_, err := pkifile.CertFromPEMFile(tc.filename)
+			if (err == nil) != (tc.err == nil) {
+				t.Fatalf("got error %v, want %v", err, tc.err)
+			}
+		})
+	}
+}
+
+func TestCertsFromPEMFile(t *testing.T) {
+	t.Parallel()
+
+	var testcases = []struct {
+		filename string
+		length   int
+		err      error
+	}{
+		{
+			filename: "testdata/two_certs.pem",
+			length:   2,
+		},
+		{
+			filename: "testdata/no_such.file",
+			err:      errors.New("no such file"),
+		},
+		{
+			filename: "testdata/three_blocks.pem",
+			err:      errors.New("not certificates"),
+		},
+	}
+
+	for _, tc := range testcases {
+		var tc = tc
+
+		t.Run(tc.filename, func(t *testing.T) {
+			t.Parallel()
+
+			certs, err := pkifile.CertsFromPEMFile(tc.filename)
+			if (err == nil) != (tc.err == nil) {
+				t.Fatalf("got error %v, want %v", err, tc.err)
+			}
+
+			if len(certs) != tc.length {
+				t.Fatalf("got length %d, want %d", len(certs), tc.length)
+			}
+		})
+	}
+}
+
+func TestCSRFromPEMFile(t *testing.T) {
+	t.Parallel()
+
+	var testcases = []struct {
+		filename string
+		err      error
+	}{
+		{
+			filename: "testdata/example_csr.pem",
+		},
+		{
+			filename: "testdata/no_such.file",
+			err:      errors.New("no such file"),
+		},
+		{
+			filename: "testdata/example_root_ca.pem",
+			err:      errors.New("not a CSR"),
+		},
+	}
+
+	for _, tc := range testcases {
+		var tc = tc
+
+		t.Run(tc.filename, func(t *testing.T) {
+			t.Parallel()
+
+			_, err := pkifile.CSRFromPEMFile(tc.filename)
+			if (err == nil) != (tc.err == nil) {
+				t.Fatalf("got error %v, want %v", err, tc.err)
+			}
+		})
+	}
+}

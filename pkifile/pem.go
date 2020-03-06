@@ -4,6 +4,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
+	"fmt"
 	"io/ioutil"
 )
 
@@ -111,4 +112,59 @@ func PublicKeyFromPEMFile(filename string) (interface{}, error) {
 	}
 
 	return nil, ErrUnrecognizedKeyType
+}
+
+// CertFromPEMFile reads a single PEM-encoded X509 certificate from a file.
+func CertFromPEMFile(filename string) (*x509.Certificate, error) {
+	block, err := PEMBlockFromFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	if block.Type != "CERTIFICATE" {
+		return nil, fmt.Errorf("got PEM header %s, expected CERTIFICATE", block.Type)
+	}
+
+	return x509.ParseCertificate(block.Bytes)
+}
+
+// CertsFromPEMFile reads one or more PEM-encoded X509 certificates from a
+// file.
+func CertsFromPEMFile(filename string) ([]*x509.Certificate, error) {
+	blocks, err := PEMBlocksFromFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	var certs []*x509.Certificate
+
+	for _, block := range blocks {
+		if block.Type != "CERTIFICATE" {
+			return nil, fmt.Errorf("got PEM header %s, expected CERTIFICATE", block.Type)
+		}
+
+		crt, err := x509.ParseCertificate(block.Bytes)
+		if err != nil {
+			return nil, err
+		}
+
+		certs = append(certs, crt)
+	}
+
+	return certs, nil
+}
+
+// CSRFromPEMFile reads a single PEM-encoded PKCS10 certificate signing
+// request from a file.
+func CSRFromPEMFile(filename string) (*x509.CertificateRequest, error) {
+	block, err := PEMBlockFromFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	if block.Type != "CERTIFICATE REQUEST" && block.Type != "NEW CERTIFICATE REQUEST" {
+		return nil, fmt.Errorf("got PEM header %s, expected CERTIFICATE REQUEST", block.Type)
+	}
+
+	return x509.ParseCertificateRequest(block.Bytes)
 }
