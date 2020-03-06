@@ -19,27 +19,25 @@ func TestExtendedKeyUsageMarshal(t *testing.T) {
 		name string
 		ext  extensions.ExtendedKeyUsage
 		want pkix.Extension
+		err  error
 	}{
 		{
 			name: "Empty",
 			ext:  extensions.ExtendedKeyUsage{},
-			want: pkix.Extension{
-				Id:       pgasn1.OIDExtendedKeyUsage,
-				Critical: false,
-				Value:    []byte{asn1.TagSequence | bit6, 0},
-			},
+			want: pkix.Extension{},
+			err:  errors.New("no extended key usages specified"),
 		},
 		{
 			name: "TLSServer",
 			ext: extensions.ExtendedKeyUsage{
-				Critical: true,
+				Critical: false,
 				OIDs: []asn1.ObjectIdentifier{
 					{1, 3, 6, 1, 5, 5, 7, 3, 1},
 				},
 			},
 			want: pkix.Extension{
 				Id:       pgasn1.OIDExtendedKeyUsage,
-				Critical: true,
+				Critical: false,
 				Value: []byte{asn1.TagSequence | bit6, 10,
 					asn1.TagOID, 8, 40*1 + 3, 6, 1, 5, 5, 7, 3, 1},
 			},
@@ -70,8 +68,8 @@ func TestExtendedKeyUsageMarshal(t *testing.T) {
 			t.Parallel()
 
 			got, err := tc.ext.Marshal()
-			if err != nil {
-				t.Fatalf("couldn't marshal extended key usages: %v", err)
+			if (err == nil) != (tc.err == nil) {
+				t.Fatalf("got error %v, want %v", err, tc.err)
 			}
 
 			if !reflect.DeepEqual(got, tc.want) {
@@ -105,12 +103,12 @@ func TestExtendedKeyUsageUnmarshal(t *testing.T) {
 			name: "TLSServer",
 			ext: pkix.Extension{
 				Id:       pgasn1.OIDExtendedKeyUsage,
-				Critical: true,
+				Critical: false,
 				Value: []byte{asn1.TagSequence | bit6, 10,
 					asn1.TagOID, 8, 40*1 + 3, 6, 1, 5, 5, 7, 3, 1},
 			},
 			want: extensions.ExtendedKeyUsage{
-				Critical: true,
+				Critical: false,
 				OIDs: []asn1.ObjectIdentifier{
 					{1, 3, 6, 1, 5, 5, 7, 3, 1},
 				},

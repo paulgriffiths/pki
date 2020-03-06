@@ -3,6 +3,7 @@ package extensions
 import (
 	"crypto/x509/pkix"
 	"encoding/asn1"
+	"errors"
 	"fmt"
 
 	pgasn1 "github.com/paulgriffiths/pki/asn1"
@@ -17,6 +18,10 @@ type ExtendedKeyUsage struct {
 
 // Marshal returns a pkix.Extension.
 func (e ExtendedKeyUsage) Marshal() (pkix.Extension, error) {
+	if len(e.OIDs) == 0 {
+		return pkix.Extension{}, errors.New("no extended key usages specified")
+	}
+
 	der, err := asn1.Marshal(e.OIDs)
 	if err != nil {
 		return pkix.Extension{}, err
