@@ -36,6 +36,10 @@ var (
 	OIDSHA256 = goasn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 1}
 	OIDSHA384 = goasn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 2}
 	OIDSHA512 = goasn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 3}
+
+	OIDMGF1 = goasn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 8}
+
+	OIDISOSignatureSHA1WithRSA = goasn1.ObjectIdentifier{1, 3, 14, 3, 2, 29}
 )
 
 // ParseOID parses a dotted decimal string representation of an OID.
