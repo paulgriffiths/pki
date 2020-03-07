@@ -8,10 +8,12 @@ import (
 
 // OID constants.
 var (
-	OIDKeyUsage         = goasn1.ObjectIdentifier{2, 5, 29, 15}
-	OIDSubjectAltName   = goasn1.ObjectIdentifier{2, 5, 29, 17}
-	OIDBasicConstraints = goasn1.ObjectIdentifier{2, 5, 29, 19}
-	OIDExtendedKeyUsage = goasn1.ObjectIdentifier{2, 5, 29, 37}
+	OIDSubjectKeyIdentifier   = goasn1.ObjectIdentifier{2, 5, 29, 14}
+	OIDKeyUsage               = goasn1.ObjectIdentifier{2, 5, 29, 15}
+	OIDSubjectAltName         = goasn1.ObjectIdentifier{2, 5, 29, 17}
+	OIDBasicConstraints       = goasn1.ObjectIdentifier{2, 5, 29, 19}
+	OIDAuthorityKeyIdentifier = goasn1.ObjectIdentifier{2, 5, 29, 35}
+	OIDExtendedKeyUsage       = goasn1.ObjectIdentifier{2, 5, 29, 37}
 )
 
 // ParseOID parses a dotted decimal string representation of an OID.

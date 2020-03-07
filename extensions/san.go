@@ -2,6 +2,7 @@ package extensions
 
 import (
 	"crypto/x509/pkix"
+	"errors"
 	"fmt"
 	"net"
 	"net/url"
@@ -21,6 +22,13 @@ type SubjectAltName struct {
 
 // Marshal returns a pkix.Extension.
 func (e SubjectAltName) Marshal() (pkix.Extension, error) {
+	if len(e.DNSNames) == 0 &&
+		len(e.EmailAddresses) == 0 &&
+		len(e.IPAddresses) == 0 &&
+		len(e.URIs) == 0 {
+		return pkix.Extension{}, errors.New("no names specified")
+	}
+
 	der, err := asn1.GeneralNames{
 		DNSNames:       e.DNSNames,
 		EmailAddresses: e.EmailAddresses,

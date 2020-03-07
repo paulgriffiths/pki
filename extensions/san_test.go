@@ -33,6 +33,7 @@ func TestSubjectAltNameMarshal(t *testing.T) {
 		name string
 		ext  extensions.SubjectAltName
 		want pkix.Extension
+		err  error
 	}{
 		{
 			name: "OK",
@@ -48,6 +49,12 @@ func TestSubjectAltNameMarshal(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "Empty",
+			ext:  extensions.SubjectAltName{},
+			want: pkix.Extension{},
+			err:  errors.New("no names"),
+		},
 	}
 
 	for _, tc := range testcases {
@@ -57,8 +64,8 @@ func TestSubjectAltNameMarshal(t *testing.T) {
 			t.Parallel()
 
 			got, err := tc.ext.Marshal()
-			if err != nil {
-				t.Fatalf("couldn't marshal basic constraints: %v", err)
+			if (err == nil) != (tc.err == nil) {
+				t.Fatalf("got error %v, want %v", err, tc.err)
 			}
 
 			if !reflect.DeepEqual(got, tc.want) {

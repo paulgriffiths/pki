@@ -41,9 +41,10 @@ func (e *ExtendedKeyUsage) Unmarshal(ext pkix.Extension) error {
 	}
 
 	var ids []asn1.ObjectIdentifier
-
-	if _, err := asn1.Unmarshal(ext.Value, &ids); err != nil {
+	if rest, err := asn1.Unmarshal(ext.Value, &ids); err != nil {
 		return err
+	} else if len(rest) > 0 {
+		return ErrTrailingBytes
 	}
 
 	*e = ExtendedKeyUsage{

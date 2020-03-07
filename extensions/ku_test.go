@@ -142,6 +142,26 @@ func TestKeyUsageUnmarshal(t *testing.T) {
 			want: extensions.KeyUsage{},
 			err:  errors.New("bad OID"),
 		},
+		{
+			name: "TrailingBytes",
+			ext: pkix.Extension{
+				Id:       pgasn1.OIDKeyUsage,
+				Critical: true,
+				Value:    []byte{asn1.TagBitString, 3, 7, 0x06, 0, 0xff},
+			},
+			want: extensions.KeyUsage{},
+			err:  errors.New("trailing bytes"),
+		},
+		{
+			name: "BadASN1",
+			ext: pkix.Extension{
+				Id:       pgasn1.OIDKeyUsage,
+				Critical: true,
+				Value:    []byte{0xff},
+			},
+			want: extensions.KeyUsage{},
+			err:  errors.New("bad ASN.1"),
+		},
 	}
 
 	for _, tc := range testcases {

@@ -53,9 +53,10 @@ func (e *KeyUsage) Unmarshal(ext pkix.Extension) error {
 	}
 
 	var bs asn1.BitString
-
-	if _, err := asn1.Unmarshal(ext.Value, &bs); err != nil {
+	if rest, err := asn1.Unmarshal(ext.Value, &bs); err != nil {
 		return err
+	} else if len(rest) > 0 {
+		return ErrTrailingBytes
 	}
 
 	*e = KeyUsage{
