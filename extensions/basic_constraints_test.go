@@ -6,9 +6,9 @@ import (
 	"reflect"
 	"testing"
 
-	goasn1 "encoding/asn1"
+	"encoding/asn1"
 
-	"github.com/paulgriffiths/pki/asn1"
+	pgasn1 "github.com/paulgriffiths/pki/asn1"
 	"github.com/paulgriffiths/pki/extensions"
 )
 
@@ -26,27 +26,27 @@ func TestBasicConstraintsMarshal(t *testing.T) {
 			name: "NotCA",
 			ext:  extensions.BasicConstraints{},
 			want: pkix.Extension{
-				Id:       asn1.OIDBasicConstraints,
+				Id:       pgasn1.OIDBasicConstraints,
 				Critical: false,
-				Value:    []byte{goasn1.TagSequence | bit6, 3, goasn1.TagBoolean, 1, 0x0},
+				Value:    []byte{asn1.TagSequence | bit6, 3, asn1.TagBoolean, 1, 0x0},
 			},
 		},
 		{
 			name: "CA/NoMaxPathLen",
 			ext:  extensions.BasicConstraints{Critical: true, IsCA: true, MaxPathLen: -1},
 			want: pkix.Extension{
-				Id:       asn1.OIDBasicConstraints,
+				Id:       pgasn1.OIDBasicConstraints,
 				Critical: true,
-				Value:    []byte{goasn1.TagSequence | bit6, 3, goasn1.TagBoolean, 1, 0xff},
+				Value:    []byte{asn1.TagSequence | bit6, 3, asn1.TagBoolean, 1, 0xff},
 			},
 		},
 		{
 			name: "CA/MaxPathLen",
 			ext:  extensions.BasicConstraints{Critical: true, IsCA: true, MaxPathLen: 4},
 			want: pkix.Extension{
-				Id:       asn1.OIDBasicConstraints,
+				Id:       pgasn1.OIDBasicConstraints,
 				Critical: true,
-				Value:    []byte{goasn1.TagSequence | bit6, 6, goasn1.TagBoolean, 1, 0xff, goasn1.TagInteger, 1, 4},
+				Value:    []byte{asn1.TagSequence | bit6, 6, asn1.TagBoolean, 1, 0xff, asn1.TagInteger, 1, 4},
 			},
 		},
 	}
@@ -81,36 +81,36 @@ func TestBasicConstraintsUnmarshal(t *testing.T) {
 		{
 			name: "NotCA",
 			ext: pkix.Extension{
-				Id:       asn1.OIDBasicConstraints,
+				Id:       pgasn1.OIDBasicConstraints,
 				Critical: false,
-				Value:    []byte{goasn1.TagSequence | bit6, 3, goasn1.TagBoolean, 1, 0x0},
+				Value:    []byte{asn1.TagSequence | bit6, 3, asn1.TagBoolean, 1, 0x0},
 			},
 			want: extensions.BasicConstraints{MaxPathLen: -1},
 		},
 		{
 			name: "CA/NoMaxPathLen",
 			ext: pkix.Extension{
-				Id:       asn1.OIDBasicConstraints,
+				Id:       pgasn1.OIDBasicConstraints,
 				Critical: true,
-				Value:    []byte{goasn1.TagSequence | bit6, 3, goasn1.TagBoolean, 1, 0xff},
+				Value:    []byte{asn1.TagSequence | bit6, 3, asn1.TagBoolean, 1, 0xff},
 			},
 			want: extensions.BasicConstraints{Critical: true, IsCA: true, MaxPathLen: -1},
 		},
 		{
 			name: "CA/MaxPathLen",
 			ext: pkix.Extension{
-				Id:       asn1.OIDBasicConstraints,
+				Id:       pgasn1.OIDBasicConstraints,
 				Critical: true,
-				Value:    []byte{goasn1.TagSequence | bit6, 6, goasn1.TagBoolean, 1, 0xff, goasn1.TagInteger, 1, 4},
+				Value:    []byte{asn1.TagSequence | bit6, 6, asn1.TagBoolean, 1, 0xff, asn1.TagInteger, 1, 4},
 			},
 			want: extensions.BasicConstraints{Critical: true, IsCA: true, MaxPathLen: 4},
 		},
 		{
 			name: "BadOID",
 			ext: pkix.Extension{
-				Id:       asn1.OIDSubjectAltName,
+				Id:       pgasn1.OIDSubjectAltName,
 				Critical: false,
-				Value:    []byte{goasn1.TagSequence | bit6, 3, goasn1.TagBoolean, 1, 0x0},
+				Value:    []byte{asn1.TagSequence | bit6, 3, asn1.TagBoolean, 1, 0x0},
 			},
 			want: extensions.BasicConstraints{},
 			err:  errors.New("bad OID"),
